@@ -33,7 +33,10 @@
   </div>
 
   <section>
-    <label class="lbl" for="famous">ruleset</label>
+    <div class="row lbl-row">
+      <label class="lbl" for="famous">ruleset</label>
+      <button id="syntax-help" title="rule syntax explained" aria-label="rule syntax explained">?</button>
+    </div>
     <select id="famous"></select>
     <div class="row">
       <input id="rule-input" type="text" spellcheck="false" autocomplete="off"
@@ -117,6 +120,69 @@
 
 <div id="hud"></div>
 <div id="toast" role="status"></div>
+
+<div id="syntax-modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="syntax-title">
+    <div class="sheet-head">
+      <h2 id="syntax-title">rule syntax</h2>
+      <button id="syntax-close" aria-label="close">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <p class="intro">A cellular automaton is just a lookup table: every cell looks at its
+    neighborhood and the table says what it becomes next tick. The rule string <em>is</em>
+    that table, compressed. Tap any example to run it.</p>
+
+    <h3>1D — one row evolves, history scrolls down</h3>
+    <dl>
+      <dt><code>110</code></dt>
+      <dd><b>Elementary</b> (0–255). A cell sees left·self·right — 8 possible patterns.
+      Write the rule number in binary and its 8 bits are the answers: 110 is
+      <code>01101110</code>, and its top bit says pattern <code>111</code> → dead.
+      256 rules total, and somehow one of them is Turing-complete.</dd>
+      <dt><code>r2:2863311530</code></dt>
+      <dd><b>Radius-2</b>. The neighborhood widens to 5 cells → 32 patterns → a 32-bit
+      rule number (hex fine: <code>r2:0xAAAA5555</code>). 4.3 billion rules.</dd>
+      <dt><code>k3:912</code></dt>
+      <dd><b>Totalistic</b>, k states (2–5). The next state depends only on the <em>sum</em>
+      of the 3-cell neighborhood; the code's base-k digits are the lookup table, digit
+      <em>s</em> answering "sum = <em>s</em>". More states = free extra colors.</dd>
+    </dl>
+    <div class="chips" data-dim="1">
+      <button class="chip">30</button>
+      <button class="chip">90</button>
+      <button class="chip">110</button>
+      <button class="chip">k3:912</button>
+      <button class="chip">k4:107396</button>
+      <button class="chip">r2:0x0B716BA5</button>
+    </div>
+
+    <h3>2D — the whole plane updates at once</h3>
+    <dl>
+      <dt><code>B3/S23</code></dt>
+      <dd><b>Life-like</b>. Each cell counts its 8 neighbors. A dead cell is
+      <b>B</b>orn on any listed count; a live cell <b>S</b>urvives on any listed count;
+      everything else dies. <code>B3/S23</code> is Conway's Life. Legacy survival-first
+      notation (<code>23/3</code>) works too.</dd>
+      <dt><code>B2/S/3</code></dt>
+      <dd><b>Generations</b>. A third number sets the total state count: cells that fail
+      to survive don't vanish — they fade through dying states that block births but
+      count for nothing. <code>B2/S/3</code> is Brian's Brain; <code>B2/S345/4</code>
+      is Star Wars. Legacy <code>/2/3</code> works.</dd>
+    </dl>
+    <div class="chips" data-dim="2">
+      <button class="chip">B3/S23</button>
+      <button class="chip">B36/S125</button>
+      <button class="chip">B3678/S34678</button>
+      <button class="chip">B2/S/3</button>
+      <button class="chip">B2/S345/4</button>
+    </div>
+
+    <p class="fineprint">Grids wrap at the edges (a torus), so gliders that leave come back.
+    The 🎲 button rolls random rules from all these families and quietly re-rolls the duds.</p>
+  </div>
+</div>
 
 <script src="engine.js"></script>
 <script src="app.js"></script>

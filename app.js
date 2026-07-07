@@ -593,7 +593,31 @@
       document.body.classList.toggle("panel-open")
     );
 
+    // syntax explainer modal
+    const modal = $("syntax-modal");
+    const openModal = () => { modal.hidden = false; };
+    const closeModal = () => { modal.hidden = true; };
+    $("syntax-help").addEventListener("click", openModal);
+    $("syntax-close").addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+    modal.querySelectorAll(".chips").forEach((group) => {
+      const dim = Number(group.dataset.dim);
+      group.querySelectorAll(".chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          setDim(dim);
+          if (applyRule(chip.textContent, { reseedIfSparse: true })) {
+            closeModal();
+            setRunning(true);
+            toast(S.rule.label);
+          }
+        });
+      });
+    });
+
     window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { closeModal(); return; }
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
       if (e.code === "Space") { e.preventDefault(); setRunning(!S.running); }
       else if (e.key === "s") { setRunning(false); stepOnce(); dirty = true; }
