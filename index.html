@@ -8,7 +8,7 @@
 <meta property="og:title" content="automata">
 <meta property="og:description" content="An infinite cellular automata playground. Famous rules, random rules, your rules.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23070a12'/%3E%3Crect x='2' y='2' width='4' height='4' fill='%2300f5d4'/%3E%3Crect x='10' y='2' width='4' height='4' fill='%239b5de5'/%3E%3Crect x='6' y='6' width='4' height='4' fill='%2300bbf9'/%3E%3Crect x='2' y='10' width='4' height='4' fill='%23f15bb5'/%3E%3Crect x='10' y='10' width='4' height='4' fill='%23fee440'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body class="panel-open">
 <script>if (window.innerWidth < 720) document.body.classList.remove("panel-open");</script>
@@ -137,17 +137,24 @@
     <h3>1D — one row evolves, history scrolls down</h3>
     <dl>
       <dt><code>110</code></dt>
-      <dd><b>Elementary</b> (0–255). A cell sees left·self·right — 8 possible patterns.
-      Write the rule number in binary and its 8 bits are the answers: 110 is
-      <code>01101110</code>, and its top bit says pattern <code>111</code> → dead.
-      256 rules total, and somehow one of them is Turing-complete.</dd>
+      <dd><b>Elementary</b> (0–255). A cell looks at left·self·right. Three cells have
+      exactly 8 possible patterns, so a rule is 8 yes/no answers — one byte. The rule
+      number <em>is</em> that byte. Here is 110's whole rulebook, one column per pattern:
+      <div class="rule-diagram" id="diag-elem"></div>
+      <span class="rd-cap">Top: the pattern a cell sees. Bottom: what it becomes.
+      Read the bottom row as binary — <code>01101110</code> = 110.</span></dd>
       <dt><code>r2:2863311530</code></dt>
-      <dd><b>Radius-2</b>. The neighborhood widens to 5 cells → 32 patterns → a 32-bit
-      rule number (hex fine: <code>r2:0xAAAA5555</code>). 4.3 billion rules.</dd>
+      <dd><b>Radius-2</b>. Same game, wider view: two neighbors per side means 5 cells,
+      2⁵ = 32 patterns, so a rule needs 32 answers — a 32-bit number (hex works:
+      <code>r2:0xAAAA5555</code>). 4.3 billion rulebooks.</dd>
       <dt><code>k3:912</code></dt>
-      <dd><b>Totalistic</b>, k states (2–5). The next state depends only on the <em>sum</em>
-      of the 3-cell neighborhood; the code's base-k digits are the lookup table, digit
-      <em>s</em> answering "sum = <em>s</em>". More states = free extra colors.</dd>
+      <dd><b>Totalistic</b>, k states (2–5). Positions stop mattering — only the
+      <em>sum</em> of the three cells counts. With 3 states the sum runs 0–6, so a rule
+      is 7 answers, each one a state (0, 1 or 2). The code is those answers written in
+      base 3: 912 = <code>1020210</code>₃.
+      <div class="rule-diagram" id="diag-tot"></div>
+      <span class="rd-cap">The sum the cell sees → the state it becomes. Extra states
+      mean extra colors for free.</span></dd>
     </dl>
     <div class="chips" data-dim="1">
       <button class="chip">30</button>
@@ -161,15 +168,27 @@
     <h3>2D — the whole plane updates at once</h3>
     <dl>
       <dt><code>B3/S23</code></dt>
-      <dd><b>Life-like</b>. Each cell counts its 8 neighbors. A dead cell is
-      <b>B</b>orn on any listed count; a live cell <b>S</b>urvives on any listed count;
-      everything else dies. <code>B3/S23</code> is Conway's Life. Legacy survival-first
-      notation (<code>23/3</code>) works too.</dd>
+      <dd><b>Life-like</b>. Each cell counts its 8 surrounding neighbors, so a count is
+      always a single digit 0–8 — and what follows <b>B</b> and <b>S</b> is a <em>set of
+      digits</em>, not a number: <code>B3678</code> means "born on 3, 6, 7 <em>or</em> 8
+      live neighbors."
+      <div id="diag-neigh"></div>
+      <span class="rd-cap">This dead cell touches 3 live cells — under <code>B3</code>
+      it's born next tick.</span>
+      A dead cell is <b>B</b>orn if its count is in the B set; a live cell
+      <b>S</b>urvives if its count is in the S set; everything else dies. An empty set
+      is legal: Seeds is <code>B2/S</code> — born on 2, survives never.
+      <code>B3/S23</code> is Conway's Life; legacy survival-first <code>23/3</code>
+      also parses.</dd>
       <dt><code>B2/S/3</code></dt>
-      <dd><b>Generations</b>. A third number sets the total state count: cells that fail
-      to survive don't vanish — they fade through dying states that block births but
-      count for nothing. <code>B2/S/3</code> is Brian's Brain; <code>B2/S345/4</code>
-      is Star Wars. Legacy <code>/2/3</code> works.</dd>
+      <dd><b>Generations</b>. The same B and S sets, plus a third slash-field that is
+      <em>not</em> neighbor counts: it's the <em>total number of states</em>. Cells that
+      fail to survive fade instead of vanishing — alive → ghost → … → gone, with
+      <em>states − 2</em> ghost steps. Ghosts hold their square (nothing can be born
+      there) but count as zero neighbors. <code>B2/S/3</code> is Brian's Brain: born on
+      2, survives never, 3 states (alive, ghost, dead). <code>B2/S345/4</code> is
+      Star Wars: born on 2 · survives on 3, 4 or 5 · two ghost steps. Legacy
+      <code>/2/3</code> also parses.</dd>
     </dl>
     <div class="chips" data-dim="2">
       <button class="chip">B3/S23</button>
@@ -184,7 +203,7 @@
   </div>
 </div>
 
-<script src="engine.js?v=2"></script>
-<script src="app.js?v=2"></script>
+<script src="engine.js?v=3"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

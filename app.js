@@ -659,6 +659,59 @@
     });
   }
 
+  // Little static diagrams inside the syntax modal. Built once at boot.
+  function renderSyntaxDiagrams() {
+    const cell = (cls) => {
+      const c = document.createElement("span");
+      c.className = "rd-cell" + (cls ? " " + cls : "");
+      return c;
+    };
+
+    // Elementary: rule 110's full lookup table, one column per 3-cell pattern.
+    const elem = $("diag-elem");
+    if (elem) {
+      const n = 110;
+      for (let i = 7; i >= 0; i--) {
+        const col = document.createElement("div");
+        col.className = "rd-col";
+        const pat = document.createElement("div");
+        pat.className = "rd-row";
+        for (const b of [4, 2, 1]) pat.appendChild(cell((i & b) ? "on" : ""));
+        const res = document.createElement("div");
+        res.className = "rd-row";
+        res.appendChild(cell(((n >> i) & 1) ? "on" : ""));
+        col.append(pat, res);
+        elem.appendChild(col);
+      }
+    }
+
+    // Totalistic: k3:912's answers, one column per neighborhood sum.
+    const tot = $("diag-tot");
+    if (tot) {
+      const rule = CA.parse1D("k3:912");
+      for (let s = 0; s <= 6; s++) {
+        const col = document.createElement("div");
+        col.className = "rd-col";
+        const lbl = document.createElement("div");
+        lbl.className = "rd-lbl";
+        lbl.textContent = s;
+        const res = document.createElement("div");
+        res.className = "rd-row";
+        res.appendChild(cell("s" + rule.lut[s]));
+        col.append(lbl, res);
+        tot.appendChild(col);
+      }
+    }
+
+    // Moore neighborhood: a dead center cell with 3 live neighbors.
+    const nb = $("diag-neigh");
+    if (nb) {
+      const live = new Set([0, 5, 7]);
+      for (let i = 0; i < 9; i++)
+        nb.appendChild(cell(i === 4 ? "center" : live.has(i) ? "on" : ""));
+    }
+  }
+
   function syncControlsFromState() {
     document.body.classList.toggle("dim1", S.dim === 1);
     document.body.classList.toggle("seed-random", S.seedMode1d === "random");
@@ -688,6 +741,7 @@
   setup(true);
   fillFamous();
   fillPalettes();
+  renderSyntaxDiagrams();
   bind();
   syncControlsFromState();
   syncRuleUI();

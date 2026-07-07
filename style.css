@@ -463,6 +463,48 @@ body.panel-open #panel-toggle .icon-close { display: block; }
   white-space: nowrap;
 }
 
+/* mini rule diagrams */
+.rule-diagram {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0 6px;
+}
+.rd-col { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.rd-row { display: flex; gap: 2px; }
+.rd-cell {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.09);
+  display: inline-block;
+}
+.rd-cell.on, .rd-cell.s1 { background: var(--accent); }
+.rd-cell.s2 { background: color-mix(in srgb, var(--accent) 40%, #ffffff); }
+.rd-cell.center {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.rd-lbl {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: var(--ink-faint);
+  line-height: 1;
+}
+#diag-neigh {
+  display: grid;
+  grid-template-columns: repeat(3, 12px);
+  gap: 2px;
+  margin: 12px 0 6px;
+}
+.rd-cap {
+  display: block;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-faint);
+  margin-bottom: 8px;
+}
+
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .chip {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
