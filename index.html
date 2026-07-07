@@ -8,7 +8,7 @@
 <meta property="og:title" content="automata">
 <meta property="og:description" content="An infinite cellular automata playground. Famous rules, random rules, your rules.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23070a12'/%3E%3Crect x='2' y='2' width='4' height='4' fill='%2300f5d4'/%3E%3Crect x='10' y='2' width='4' height='4' fill='%239b5de5'/%3E%3Crect x='6' y='6' width='4' height='4' fill='%2300bbf9'/%3E%3Crect x='2' y='10' width='4' height='4' fill='%23f15bb5'/%3E%3Crect x='10' y='10' width='4' height='4' fill='%23fee440'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body class="panel-open">
 <script>if (window.innerWidth < 720) document.body.classList.remove("panel-open");</script>
@@ -136,13 +136,15 @@
 
     <h3>1D — one row evolves, history scrolls down</h3>
     <dl>
-      <dt><code>110</code></dt>
+      <dt><code>30</code></dt>
       <dd><b>Elementary</b> (0–255). A cell looks at left·self·right. Three cells have
-      exactly 8 possible patterns, so a rule is 8 yes/no answers — one byte. The rule
-      number <em>is</em> that byte. Here is 110's whole rulebook, one column per pattern:
+      exactly 8 possible patterns, so a rule is 8 yes/no answers — one byte. The rule's
+      name is that byte written as an everyday decimal number. Here is rule 30's whole
+      rulebook, one column per pattern:
       <div class="rule-diagram" id="diag-elem"></div>
       <span class="rd-cap">Top: the pattern a cell sees. Bottom: what it becomes.
-      Read the bottom row as binary — <code>01101110</code> = 110.</span></dd>
+      The answer row is <code>00011110</code> as binary, which is the number 30 —
+      hence "rule 30".</span></dd>
       <dt><code>r2:2863311530</code></dt>
       <dd><b>Radius-2</b>. Same game, wider view: two neighbors per side means 5 cells,
       2⁵ = 32 patterns, so a rule needs 32 answers — a 32-bit number (hex works:
@@ -203,7 +205,7 @@
   </div>
 </div>
 
-<script src="engine.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="engine.js?v=4"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

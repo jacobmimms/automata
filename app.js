@@ -667,10 +667,12 @@
       return c;
     };
 
-    // Elementary: rule 110's full lookup table, one column per 3-cell pattern.
+    // Elementary: rule 30's full lookup table, one column per 3-cell pattern.
+    // (30, not 110 — a decimal name made of only 0s and 1s reads as binary and
+    // collides with the patterns themselves.)
     const elem = $("diag-elem");
     if (elem) {
-      const n = 110;
+      const n = 30;
       for (let i = 7; i >= 0; i--) {
         const col = document.createElement("div");
         col.className = "rd-col";
