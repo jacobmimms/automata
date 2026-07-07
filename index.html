@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>automata · an infinite cellular playground</title>
+<meta name="description" content="Generate, remix, and watch 1D and 2D cellular automata — elementary rules, Life-like rules, Generations rules — in color, forever.">
+<meta property="og:title" content="automata">
+<meta property="og:description" content="An infinite cellular automata playground. Famous rules, random rules, your rules.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23070a12'/%3E%3Crect x='2' y='2' width='4' height='4' fill='%2300f5d4'/%3E%3Crect x='10' y='2' width='4' height='4' fill='%239b5de5'/%3E%3Crect x='6' y='6' width='4' height='4' fill='%2300bbf9'/%3E%3Crect x='2' y='10' width='4' height='4' fill='%23f15bb5'/%3E%3Crect x='10' y='10' width='4' height='4' fill='%23fee440'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="panel-open">
+<script>if (window.innerWidth < 720) document.body.classList.remove("panel-open");</script>
+
+<canvas id="view"></canvas>
+<div id="vignette"></div>
+
+<button id="panel-toggle" title="toggle controls (h)" aria-label="toggle controls">
+  <svg class="icon-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg class="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+</button>
+
+<aside id="panel">
+  <header>
+    <h1>automata</h1>
+    <p class="sub">an infinite cellular playground</p>
+  </header>
+
+  <div class="seg" role="group" aria-label="dimension">
+    <button id="mode-1d">1D</button>
+    <button id="mode-2d" class="active">2D</button>
+  </div>
+
+  <section>
+    <label class="lbl" for="famous">ruleset</label>
+    <select id="famous"></select>
+    <div class="row">
+      <input id="rule-input" type="text" spellcheck="false" autocomplete="off"
+             placeholder="B3/S23 · 110 · k3:912" aria-label="rule in formal syntax">
+      <button id="rule-apply" class="mini">set</button>
+    </div>
+    <div id="rule-error" role="alert"></div>
+    <p id="rule-desc"></p>
+    <button id="rule-random" class="wide">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle class="dot" cx="8.3" cy="8.3" r="1.5"/><circle class="dot" cx="15.7" cy="8.3" r="1.5"/><circle class="dot" cx="12" cy="12" r="1.5"/><circle class="dot" cx="8.3" cy="15.7" r="1.5"/><circle class="dot" cx="15.7" cy="15.7" r="1.5"/></svg>
+      surprise me
+    </button>
+  </section>
+
+  <section id="seed-section">
+    <span class="lbl">seed</span>
+    <div class="seg only-1d" role="group" aria-label="1D seed mode">
+      <button id="seed-single" class="active">single cell</button>
+      <button id="seed-random">noise</button>
+    </div>
+    <div class="row slider-row" id="density-row">
+      <span class="slbl">density</span>
+      <input id="density" type="range" min="2" max="90" value="28">
+      <span class="sval" id="density-val">28%</span>
+    </div>
+  </section>
+
+  <section>
+    <span class="lbl">look</span>
+    <div id="palettes" aria-label="color palette"></div>
+    <div class="seg" role="group" aria-label="color mode">
+      <button id="mode-state" class="cmode">solid</button>
+      <button id="mode-age" class="cmode active">age</button>
+      <button id="mode-flow" class="cmode">flow</button>
+    </div>
+    <div class="row slider-row only-2d">
+      <span class="slbl">trails</span>
+      <input id="trail" type="range" min="0" max="97" value="90">
+    </div>
+    <div class="row slider-row">
+      <span class="slbl">cell&nbsp;size</span>
+      <select id="cell-size" class="grow">
+        <option value="2">2 px — fine</option>
+        <option value="3">3 px</option>
+        <option value="4" selected>4 px</option>
+        <option value="6">6 px</option>
+        <option value="8">8 px — chunky</option>
+      </select>
+    </div>
+  </section>
+
+  <section>
+    <button id="copy-link" class="wide ghost">
+      <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      copy share link
+    </button>
+    <p class="hints">space play/pause · <b>s</b> step · <b>r</b> reseed · <b>d</b> random rule<span class="only-2d"> · <b>c</b> clear · draw with your mouse</span></p>
+  </section>
+</aside>
+
+<div id="transport">
+  <button id="btn-play" title="play/pause (space)">
+    <svg id="play-icon" viewBox="0 0 24 24" style="display:none"><polygon class="fill" points="7 4 20 12 7 20"/></svg>
+    <svg id="pause-icon" viewBox="0 0 24 24"><rect class="fill" x="6" y="5" width="4" height="14" rx="1"/><rect class="fill" x="14" y="5" width="4" height="14" rx="1"/></svg>
+  </button>
+  <button id="btn-step" title="step (s)">
+    <svg viewBox="0 0 24 24"><polygon class="fill" points="5 5 15 12 5 19"/><rect class="fill" x="17" y="5" width="2.6" height="14" rx="1"/></svg>
+  </button>
+  <button id="btn-reseed" title="reseed (r)">
+    <svg viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/><path d="M3.51 15a9 9 0 0 0 14.85 3.36L23 14"/></svg>
+  </button>
+  <button id="btn-clear" class="only-2d" title="clear (c)">
+    <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+  </button>
+  <button id="btn-dice" title="random rule (d)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle class="dot" cx="8.3" cy="8.3" r="1.5"/><circle class="dot" cx="15.7" cy="15.7" r="1.5"/><circle class="dot" cx="12" cy="12" r="1.5"/></svg>
+  </button>
+  <input id="speed" type="range" min="0" max="100" value="58" title="speed">
+  <span id="speed-val">24/s</span>
+</div>
+
+<div id="hud"></div>
+<div id="toast" role="status"></div>
+
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
