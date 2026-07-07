@@ -24,6 +24,10 @@ Any static server, e.g.:
 python3 -m http.server 8000
 ```
 
+## Caching
+
+Cloudflare Pages serves `.js`/`.css` with `max-age=14400` (4 h), while HTML always revalidates. The asset tags in `index.html` therefore carry a `?v=N` query string — **bump it whenever engine.js / app.js / style.css change**, or returning visitors run stale code against new HTML.
+
 ## Deploy
 
 Deployed as a mimmsy.com subdomain project: Cloudflare Pages project `mimmsy-automata`, git-connected to this repo, production branch `main`, no build command (the mimmsy control plane injects its shared nav at build time), output directory `.`.
